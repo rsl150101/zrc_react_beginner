@@ -25,13 +25,34 @@
         this.setState({ inputNum: e.target.value });
       };
 
+      handleGuGuDanFormSubmit = (e) => {
+        e.preventDefault();
+        if (this.state.inputNum === "") return;
+        if (
+          parseInt(this.state.inputNum) ===
+          this.state.firstNum * this.state.secondNum
+        ) {
+          this.setState({
+            firstNum: Math.ceil(Math.random() * 9),
+            secondNum: Math.ceil(Math.random() * 9),
+            result: "Correct!",
+            inputNum: "",
+          });
+        } else {
+          this.setState({
+            result: "Wrong!",
+            inputNum: "",
+          });
+        }
+      };
+
       render() {
         return (
           <>
             <h2>
               {this.state.firstNum} X {this.state.secondNum} = ?
             </h2>
-            <form>
+            <form onSubmit={this.handleGuGuDanFormSubmit}>
               <input
                 type="number"
                 value={this.state.inputNum}
