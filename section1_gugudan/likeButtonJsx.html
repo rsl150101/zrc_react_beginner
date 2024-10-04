@@ -11,23 +11,22 @@
     // JSX 작성 방식
     const domNode = document.getElementById("root");
     const root = ReactDOM.createRoot(domNode); // React v18 에서 기존의 render 은 createRoot로 대체되었다.
-    // React Hook 도입 이전에는 class 로 컴포넌트 작성
-    class LikeButton extends React.Component {
-      constructor(props) {
-        super(props);
-        this.state = { liked: false };
+    // React Hook 도입 이후 function 으로 컴포넌트 작성
+    const LikeButton = () => {
+      const [liked, setLiked] = React.useState(false);
+      if (liked) {
+        return <span>You liked this.</span>;
       }
-
-      render() {
-        if (this.state.liked) {
-          return <span>You liked this.</span>;
-        }
-
-        return (
-          <button onClick={() => this.setState({ liked: true })}>Like</button>
-        );
-      }
-    }
+      return (
+        <button
+          onClick={() => {
+            setLiked(true);
+          }}
+        >
+          Like
+        </button>
+      );
+    };
     root.render(<LikeButton />); // React v18 에서 render 방식
   </script>
 </html>
