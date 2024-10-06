@@ -1,6 +1,6 @@
 const path = require("path");
 
-module.expots = {
+module.exports = {
   mode: "development",
   entry: {
     app: ["./client.jsx"],
