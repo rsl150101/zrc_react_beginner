@@ -10,74 +10,58 @@
     "use strict";
     const domNode = document.getElementById("root");
     const root = ReactDOM.createRoot(domNode);
-    class GuGuDan extends React.Component {
-      constructor(props) {
-        super(props);
-        this.state = {
-          firstNum: Math.ceil(Math.random() * 9),
-          secondNum: Math.ceil(Math.random() * 9),
-          inputNum: "",
-          result: "",
-        };
-      }
 
-      handleInputChange = (e) => {
-        this.setState({ inputNum: e.target.value });
+    const GuGuDan = () => {
+      const [firstNum, setFristNum] = React.useState(
+        Math.ceil(Math.random() * 9)
+      );
+      const [secondNum, setSecondNum] = React.useState(
+        Math.ceil(Math.random() * 9)
+      );
+      const [inputNum, setInputNum] = React.useState("");
+      const [result, setResult] = React.useState("");
+      const inputRef = React.useRef(null);
+
+      const handleInputChange = (e) => {
+        setInputNum(e.target.value);
       };
 
-      handleGuGuDanFormSubmit = (e) => {
+      const handleGuGuDanFormSubmit = (e) => {
         e.preventDefault();
-        if (this.state.inputNum === "") {
-          this.inputRef.focus();
+        if (inputNum === "") {
+          inputRef.current.focus();
           return;
         }
-        if (
-          parseInt(this.state.inputNum) ===
-          this.state.firstNum * this.state.secondNum
-        ) {
-          this.setState({
-            firstNum: Math.ceil(Math.random() * 9),
-            secondNum: Math.ceil(Math.random() * 9),
-            result: "Correct!",
-            inputNum: "",
-          });
+        if (parseInt(inputNum) === firstNum * secondNum) {
+          setFristNum(Math.ceil(Math.random() * 9));
+          setSecondNum(Math.ceil(Math.random() * 9));
+          setResult("Correct!");
+          setInputNum("");
         } else {
-          this.setState({
-            result: "Wrong!",
-            inputNum: "",
-          });
+          setResult("Wrong!");
+          setInputNum("");
         }
-        this.inputRef.focus();
+        inputRef.current.focus();
       };
 
-      inputRef;
-
-      handleInputRef = (cur) => {
-        console.log(cur);
-
-        this.inputRef = cur;
-      };
-
-      render() {
-        return (
-          <>
-            <h2>
-              {this.state.firstNum} X {this.state.secondNum} = ?
-            </h2>
-            <form onSubmit={this.handleGuGuDanFormSubmit}>
-              <input
-                type="number"
-                value={this.state.inputNum}
-                onChange={this.handleInputChange}
-                ref={this.handleInputRef}
-              />
-              <button>Submit</button>
-            </form>
-            <h3>{this.state.result}</h3>
-          </>
-        );
-      }
-    }
+      return (
+        <>
+          <h2>
+            {firstNum} X {secondNum} = ?
+          </h2>
+          <form onSubmit={handleGuGuDanFormSubmit}>
+            <input
+              type="number"
+              value={inputNum}
+              onChange={handleInputChange}
+              ref={inputRef}
+            />
+            <button>Submit</button>
+          </form>
+          <h3>{result}</h3>
+        </>
+      );
+    };
     root.render(<GuGuDan />);
   </script>
 </html>
