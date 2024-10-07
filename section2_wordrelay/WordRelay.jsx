@@ -3,26 +3,27 @@ const { useState, useRef } = React;
 
 const WordRelay = () => {
   const [word, setWord] = useState("react");
-  const [inputWord, setInputWord] = useState("");
   const [wrongMsg, setWrongMsg] = useState("");
   const inputRef = useRef(null);
 
-  handleInputChange = (e) => {
-    setInputWord(e.target.value);
-  };
   handleFormSubmit = (e) => {
     e.preventDefault();
-    if (inputWord === "") {
+
+    if (e.target.children.inputWord.value === "") {
       inputRef.current.focus();
       return;
     }
-    if (inputWord.at(0) === word.at(-1)) {
-      setWord(inputWord);
-      setInputWord("");
+    if (e.target.children.inputWord.value.at(0) === word.at(-1)) {
+      setWord(e.target.children.inputWord.value);
+      e.target.children.inputWord.value = "";
       setWrongMsg("");
     } else {
-      setInputWord("");
-      setWrongMsg(`${inputWord} does not start with ${word.at(-1)}`);
+      setWrongMsg(
+        `${e.target.children.inputWord.value} does not start with ${word.at(
+          -1
+        )}`
+      );
+      e.target.children.inputWord.value = "";
     }
     inputRef.current.focus();
   };
@@ -31,7 +32,7 @@ const WordRelay = () => {
     <>
       <h2>{word}</h2>
       <form onSubmit={handleFormSubmit}>
-        <input ref={inputRef} value={inputWord} onChange={handleInputChange} />
+        <input ref={inputRef} id="inputWord" />
         <button>Submit</button>
       </form>
       <h3>{wrongMsg}</h3>
