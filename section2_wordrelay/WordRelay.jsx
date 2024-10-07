@@ -1,59 +1,42 @@
 const React = require("react");
-const { Component } = React;
+const { useState, useRef } = React;
 
-class WordRelay extends Component {
-  state = {
-    word: "리액트",
-    inputWord: "",
-    wrongMsg: "",
-  };
-  inputRef;
+const WordRelay = () => {
+  const [word, setWord] = useState("react");
+  const [inputWord, setInputWord] = useState("");
+  const [wrongMsg, setWrongMsg] = useState("");
+  const inputRef = useRef(null);
 
   handleInputChange = (e) => {
-    this.setState({ inputWord: e.target.value });
+    setInputWord(e.target.value);
   };
   handleFormSubmit = (e) => {
     e.preventDefault();
-    if (this.state.inputWord === "") {
-      this.inputRef.focus();
+    if (inputWord === "") {
+      inputRef.current.focus();
       return;
     }
-    if (this.state.inputWord.at(0) === this.state.word.at(-1)) {
-      this.setState({
-        word: this.state.inputWord,
-        inputWord: "",
-        wrongMsg: "",
-      });
+    if (inputWord.at(0) === word.at(-1)) {
+      setWord(inputWord);
+      setInputWord("");
+      setWrongMsg("");
     } else {
-      this.setState({
-        inputWord: "",
-        wrongMsg: `${
-          this.state.inputWord
-        } does not start with ${this.state.word.at(-1)}`,
-      });
+      setInputWord("");
+      setWrongMsg(`${inputWord} does not start with ${word.at(-1)}`);
     }
-    this.inputRef.focus();
-  };
-  handleInputRef = (cur) => {
-    this.inputRef = cur;
+    inputRef.current.focus();
   };
 
-  render() {
-    return (
-      <>
-        <h2>{this.state.word}</h2>
-        <form onSubmit={this.handleFormSubmit}>
-          <input
-            ref={this.handleInputRef}
-            value={this.state.inputWord}
-            onChange={this.handleInputChange}
-          />
-          <button>Submit</button>
-        </form>
-        <h3>{this.state.wrongMsg}</h3>
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <h2>{word}</h2>
+      <form onSubmit={handleFormSubmit}>
+        <input ref={inputRef} value={inputWord} onChange={handleInputChange} />
+        <button>Submit</button>
+      </form>
+      <h3>{wrongMsg}</h3>
+    </>
+  );
+};
 
 module.exports = WordRelay;
