@@ -1,8 +1,8 @@
 const React = require("react");
-const { Component } = React;
+const { useState, useRef } = React;
 const Try = require("./Try");
 
-function getNumbers() {
+const getNumbers = () => {
   const candidate = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   const array = [];
   for (let i = 0; i < 4; i += 1) {
@@ -10,58 +10,47 @@ function getNumbers() {
     array.push(chosen);
   }
   return array;
-}
+};
 
-class NumberBaseball extends Component {
-  state = {
-    inputNum: "",
-    answer: getNumbers(),
-    tries: [],
-    result: "",
-    chance: 10,
-    gameover: false,
-  };
-  inputRef;
-  handleInputRef = (cur) => {
-    this.inputRef = cur;
-  };
+const NumberBaseball = () => {
+  const [inputNum, setInputNum] = useState("");
+  const [answer, setAnswer] = useState(getNumbers);
+  const [tries, setTries] = useState([]);
+  const [chance, setChance] = useState(10);
+  const [gameover, setGameover] = useState(false);
+  const inputRef = useRef(null);
+
   handleInputChange = (e) => {
-    this.setState({ inputNum: e.target.value });
+    setInputNum(e.target.value);
   };
+
   handleFormSubmit = (e) => {
     e.preventDefault();
-    const { inputNum, answer, gameover, chance } = this.state;
     if (gameover) {
-      this.setState({
-        inputNum: "",
-        answer: getNumbers(),
-        tries: [],
-        result: "",
-        chance: 10,
-        gameover: false,
-      });
+      setInputNum("");
+      setAnswer(getNumbers());
+      setTries([]);
+      setChance(10);
+      setGameover(false);
       return;
     }
     if (inputNum === "" || inputNum.length < 4) {
-      this.inputRef.focus();
+      inputRef.current.focus();
       return;
     }
-    this.setState((prevState) => ({
-      chance: prevState.chance - 1,
-    }));
+    setChance((prevChance) => (prevChance -= 1));
     if (inputNum === answer.join("")) {
-      this.setState((prevState) => ({
-        tries: [...prevState.tries, { num: inputNum, result: "Home Run!" }],
-        gameover: !prevState.gameover,
-      }));
+      setTries((prevTries) => [
+        ...prevTries,
+        { num: inputNum, result: "Home Run!" },
+      ]);
+      setGameover((prevGameover) => !prevGameover);
     } else if (chance === 1) {
-      this.setState((prevState) => ({
-        tries: [
-          ...prevState.tries,
-          { num: inputNum, result: `Game Over! answer is ${answer.join("")}` },
-        ],
-        gameover: !prevState.gameover,
-      }));
+      setTries((prevTries) => [
+        ...prevTries,
+        { num: inputNum, result: `Game Over! answer is ${answer.join("")}` },
+      ]);
+      setGameover((prevGameover) => !prevGameover);
     } else {
       const inputNumArr = inputNum.split("").map((n) => parseInt(n));
       let strike = 0;
@@ -73,39 +62,34 @@ class NumberBaseball extends Component {
           ball += 1;
         }
       }
-      this.setState((prevState) => ({
-        tries: [
-          ...prevState.tries,
-          { num: inputNum, result: `${strike}S ${ball}B` },
-        ],
-      }));
+      setTries((prevTries) => [
+        ...prevTries,
+        { num: inputNum, result: `${strike}S ${ball}B` },
+      ]);
     }
-    this.setState({ inputNum: "" });
-    this.inputRef.focus();
+    setInputNum("");
+    inputRef.current.focus();
   };
-  render() {
-    const { inputNum, gameover, chance, tries, answer } = this.state;
 
-    return (
-      <>
-        <h2>Your Chance : {chance}</h2>
-        <form onSubmit={this.handleFormSubmit}>
-          <input
-            ref={this.handleInputRef}
-            value={inputNum}
-            onChange={this.handleInputChange}
-            disabled={gameover}
-          />
-          {gameover ? <button>Restart</button> : <button>Submit</button>}
-        </form>
-        <ol>
-          {tries.map((v, i) => (
-            <Try key={`${answer}_${i + 1}_${v.num}`} pitch={v} />
-          ))}
-        </ol>
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <h2>Your Chance : {chance}</h2>
+      <form onSubmit={handleFormSubmit}>
+        <input
+          ref={inputRef}
+          value={inputNum}
+          onChange={handleInputChange}
+          disabled={gameover}
+        />
+        {gameover ? <button>Restart</button> : <button>Submit</button>}
+      </form>
+      <ol>
+        {tries.map((v, i) => (
+          <Try key={`${answer}_${i + 1}_${v.num}`} pitch={v} />
+        ))}
+      </ol>
+    </>
+  );
+};
 
 module.exports = NumberBaseball;
