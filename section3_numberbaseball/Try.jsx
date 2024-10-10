@@ -1,6 +1,6 @@
 const React = require("react");
-
-const Try = ({ pitch }) => {
+const { memo } = React;
+const Try = memo(({ pitch }) => {
   return (
     <li>
       <h3>
@@ -8,6 +8,8 @@ const Try = ({ pitch }) => {
       </h3>
     </li>
   );
-};
+});
+
+Try.displayName = "Try";
 
 module.exports = Try;
