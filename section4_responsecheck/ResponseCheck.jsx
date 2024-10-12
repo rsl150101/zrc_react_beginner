@@ -43,7 +43,7 @@ class ResponseCheck extends Component {
     }
   };
 
-  renderAdverage = () => {
+  renderAverage = () => {
     const { result } = this.state;
     if (result.length === 0) {
       return 0;
@@ -66,7 +66,7 @@ class ResponseCheck extends Component {
         >
           <h3>{message}</h3>
         </div>
-        <h2>Adverage : {this.renderAdverage()} ms</h2>
+        <h2>Average : {this.renderAverage()} ms</h2>
         <button onClick={this.handleResetBtn}>Reset</button>
       </>
     );
