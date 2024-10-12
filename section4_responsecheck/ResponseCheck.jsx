@@ -52,6 +52,10 @@ class ResponseCheck extends Component {
     }
   };
 
+  handleResetBtn = () => {
+    this.setState({ result: [] });
+  };
+
   render() {
     const { screen, message } = this.state;
     return (
@@ -63,6 +67,7 @@ class ResponseCheck extends Component {
           <h3>{message}</h3>
         </div>
         <h2>Adverage : {this.renderAdverage()} ms</h2>
+        <button onClick={this.handleResetBtn}>Reset</button>
       </>
     );
   }
