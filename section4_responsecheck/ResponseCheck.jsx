@@ -48,7 +48,7 @@ class ResponseCheck extends Component {
     if (result.length === 0) {
       return 0;
     } else {
-      return result.reduce((a, c) => a + c, result[0]) / result.length;
+      return result.reduce((a, c) => a + c, 0) / result.length;
     }
   };
 
