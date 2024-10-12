@@ -13,7 +13,7 @@ class ResponseCheck extends Component {
   endTime;
 
   handleScreenClick = () => {
-    const { screen, message, result } = this.state;
+    const { screen } = this.state;
 
     if (screen === "waiting") {
       this.setState({
