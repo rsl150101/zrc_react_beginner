@@ -1,50 +1,39 @@
 const React = require("react");
-const { Component } = React;
+const { useState, useRef } = React;
 
-class ResponseCheck extends Component {
-  state = {
-    screen: "waiting",
-    message: "Click start",
-    result: [],
-  };
+const ResponseCheck = () => {
+  const [screen, setScreen] = useState("waiting");
+  const [message, setMessage] = useState("Click start");
+  const [result, setResult] = useState([]);
+  const timeoutRef = useRef(null);
+  const startTimeRef = useRef(null);
+  const endTimeRef = useRef(null);
 
-  timeout;
-  startTime;
-  endTime;
-
-  handleScreenClick = () => {
-    const { screen } = this.state;
-
+  const handleScreenClick = () => {
     if (screen === "waiting") {
-      this.setState({
-        screen: "ready",
-        message: "Click when background color is green",
-      });
-      this.timeout = setTimeout(() => {
-        this.setState({
-          screen: "now",
-          message: "Now!",
-        });
-        this.startTime = new Date();
+      timeoutRef.current = setTimeout(() => {
+        setScreen("now");
+        setMessage("Now!");
+        startTimeRef.current = new Date();
       }, Math.floor(Math.random() * 1000) + 2000);
+      setScreen("ready");
+      setMessage("Click when background color is green");
     } else if (screen === "ready") {
-      clearTimeout(this.timeout);
-      this.setState({
-        screen: "waiting",
-        message: "Too fast! Click when background color is green",
-      });
+      clearTimeout(timeoutRef.current);
+      setScreen("waiting");
+      setMessage("Too fast! Click when background color is green");
     } else if (screen === "now") {
-      this.endTime = new Date();
-      this.setState((prevState) => ({
-        screen: "waiting",
-        message: "Click start",
-        result: [...prevState.result, this.endTime - this.startTime],
-      }));
+      endTimeRef.current = new Date();
+      setScreen("waiting");
+      setMessage("Click start");
+      setResult((prevResult) => [
+        ...prevResult,
+        endTimeRef.current - startTimeRef.current,
+      ]);
     }
   };
 
   renderAverage = () => {
-    const { result } = this.state;
     if (result.length === 0) {
       return 0;
     } else {
@@ -53,24 +42,18 @@ class ResponseCheck extends Component {
   };
 
   handleResetBtn = () => {
-    this.setState({ result: [] });
+    setResult([]);
   };
 
-  render() {
-    const { screen, message } = this.state;
-    return (
-      <>
-        <div
-          className={`screen screen_${screen}`}
-          onClick={this.handleScreenClick}
-        >
-          <h3>{message}</h3>
-        </div>
-        <h2>Average : {this.renderAverage()} ms</h2>
-        <button onClick={this.handleResetBtn}>Reset</button>
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <div className={`screen screen_${screen}`} onClick={handleScreenClick}>
+        <h3>{message}</h3>
+      </div>
+      <h2>Average : {renderAverage()} ms</h2>
+      <button onClick={handleResetBtn}>Reset</button>
+    </>
+  );
+};
 
 module.exports = ResponseCheck;
