@@ -1,5 +1,6 @@
 const React = require("react");
 const { useState, useRef, useEffect } = React;
+const useInterval = require("./useInterval");
 
 const rspCoords = {
   scissors: "-140px",
@@ -22,7 +23,6 @@ const RSP = () => {
   const [imgCoord, setImgCoord] = useState(rspCoords.rock);
   const [score, setScore] = useState(0);
   const [shoot, setShoot] = useState(false);
-  const intervalRef = useRef(null);
 
   changeHand = () => {
     if (imgCoord === rspCoords.scissors) {
@@ -34,16 +34,10 @@ const RSP = () => {
     }
   };
 
-  useEffect(() => {
-    intervalRef.current = setInterval(changeHand, 100);
-    return () => {
-      clearInterval(intervalRef.current);
-    };
-  }, [imgCoord]);
+  useInterval(changeHand, shoot ? null : 100);
 
   handleRspClickBtn = (chosen) => () => {
     setShoot((prevShoot) => !prevShoot);
-    clearInterval(intervalRef.current);
     const userChosen = scores[chosen];
     const computerChosen = scores[getComputerRsp(imgCoord)];
     const diff = userChosen - computerChosen;
@@ -59,8 +53,8 @@ const RSP = () => {
     }
     setTimeout(() => {
       setShoot((prevShoot) => !prevShoot);
-      intervalRef.current = setInterval(changeHand, 100);
     }, 2000);
+    // }
   };
 
   return (
