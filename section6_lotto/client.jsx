@@ -1,5 +1,5 @@
-const React = require("react");
-const { createRoot } = require("react-dom/client");
+import React from "react";
+import { createRoot } from "react-dom/client";
 
 const root = createRoot(document.getElementById("root"));
 
