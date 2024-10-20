@@ -15,7 +15,12 @@ const reducer = (state, action) => {};
 
 const TicTacToe = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  return;
+  const { tableData } = state;
+  return (
+    <>
+      <Table tableData={tableData} />
+    </>
+  );
 };
 
 export default TicTacToe;
