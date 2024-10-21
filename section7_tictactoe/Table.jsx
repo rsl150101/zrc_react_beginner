@@ -1,7 +1,7 @@
-import React from "react";
+import React, { memo } from "react";
 import Tr from "./Tr";
 
-const Table = ({ tableData, dispatch }) => {
+const Table = memo(({ tableData, dispatch }) => {
   return (
     <table>
       {Array(tableData.length)
@@ -16,6 +16,6 @@ const Table = ({ tableData, dispatch }) => {
         ))}
     </table>
   );
-};
+});
 
 export default Table;
