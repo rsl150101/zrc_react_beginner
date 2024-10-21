@@ -71,6 +71,8 @@ const TicTacToe = () => {
       tableData[row][1] === turn &&
       tableData[row][2] === turn
     ) {
+      console.log(1);
+
       win = true;
     }
     if (
@@ -78,6 +80,8 @@ const TicTacToe = () => {
       tableData[1][cell] === turn &&
       tableData[2][cell] === turn
     ) {
+      console.log(2);
+
       win = true;
     }
     if (
@@ -85,12 +89,14 @@ const TicTacToe = () => {
       tableData[1][1] === turn &&
       tableData[2][2] === turn
     ) {
+      console.log(3);
+
       win = true;
     }
     if (
       tableData[0][2] === turn &&
       tableData[1][1] === turn &&
-      tableData[2][0]
+      tableData[2][0] === turn
     ) {
       win = true;
     }
