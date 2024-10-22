@@ -16,10 +16,13 @@ const Form = () => {
   const handleMineChange = useCallback((e) => {
     setMine(e.target.value);
   }, []);
-  const handleGameStartForm = useCallback((e) => {
-    e.preventDefault();
-    dispatch({ type: START_GAME, row, col, mine });
-  }, []);
+  const handleGameStartForm = useCallback(
+    (e) => {
+      e.preventDefault();
+      dispatch({ type: START_GAME, row, col, mine });
+    },
+    [row, col, mine]
+  );
 
   return (
     <form onSubmit={handleGameStartForm}>
