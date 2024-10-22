@@ -26,7 +26,34 @@ const initialState = {
 
 export const START_GAME = "START_GAME";
 
-const plantMine = (row, col, mine) => {};
+const plantMine = (row, col, mine) => {
+  const candidate = Array(row * col)
+    .fill()
+    .map((_, i) => i);
+  const mineArr = [];
+  while (candidate.length > row * col - mine) {
+    const chosenMine = candidate.splice(
+      Math.floor(Math.random() * candidate.length),
+      1
+    )[0];
+    mineArr.push(chosenMine);
+  }
+  const data = [];
+  for (let i = 0; i < row; i++) {
+    const rowData = [];
+    data.push(rowData);
+    for (let j = 0; j < col; j++) {
+      rowData.push(CODE.NORMAL);
+    }
+  }
+
+  for (let k = 0; k < mineArr.length; k++) {
+    const ver = Math.floor(mineArr[k] / col);
+    const hor = mineArr[k] % col;
+    data[ver][hor] = CODE.MINE;
+  }
+  return data;
+};
 
 const reducer = (state, action) => {
   switch (action.type) {
