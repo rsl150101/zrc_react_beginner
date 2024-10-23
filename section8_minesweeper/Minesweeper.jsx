@@ -73,32 +73,85 @@ const reducer = (state, action) => {
     }
     case OPEN_CELL: {
       const tableData = [...state.tableData];
-      tableData[action.row] = [...state.tableData[action.row]];
-      let around = [];
-      if (tableData[action.row - 1]) {
-        around = around.concat(
-          [tableData[action.row - 1][action.col - 1]],
-          [tableData[action.row - 1][action.col]],
-          [tableData[action.row - 1][action.col + 1]]
-        );
-      }
-      around = around.concat(
-        [tableData[action.row][action.col - 1]],
-        [tableData[action.row][action.col + 1]]
-      );
-      if (tableData[action.row + 1]) {
-        around = around.concat(
-          [tableData[action.row + 1][action.col - 1]],
-          [tableData[action.row + 1][action.col]],
-          [tableData[action.row + 1][action.col + 1]]
-        );
-      }
+      tableData.forEach((row, i) => {
+        tableData[i] = [...row];
+      });
+      const checked = [];
 
-      const mineCount = around.filter((mine) =>
-        [CODE.MINE, CODE.FLAG_MINE, CODE.QUESTION_MINE].includes(mine)
-      ).length;
+      const checkAround = (row, col) => {
+        if (
+          row < 0 ||
+          row >= tableData.length ||
+          col < 0 ||
+          col >= tableData[0].length
+        ) {
+          return;
+        }
+        if (
+          [
+            CODE.OPENED,
+            CODE.FLAG,
+            CODE.FLAG_MINE,
+            CODE.QUESTION_MINE,
+            CODE.QUESTION,
+          ].includes(tableData[row][col])
+        ) {
+          return;
+        }
+        if (checked.includes(row + "/" + col)) {
+          return;
+        } else {
+          checked.push(row + "/" + col);
+        }
+        let around = [];
+        if (tableData[row - 1]) {
+          around = around.concat(
+            [tableData[row - 1][col - 1]],
+            [tableData[row - 1][col]],
+            [tableData[row - 1][col + 1]]
+          );
+        }
+        around = around.concat(
+          [tableData[row][col - 1]],
+          [tableData[row][col + 1]]
+        );
+        if (tableData[row + 1]) {
+          around = around.concat(
+            [tableData[row + 1][col - 1]],
+            [tableData[row + 1][col]],
+            [tableData[row + 1][col + 1]]
+          );
+        }
 
-      tableData[action.row][action.col] = mineCount;
+        const mineCount = around.filter((mine) =>
+          [CODE.MINE, CODE.FLAG_MINE, CODE.QUESTION_MINE].includes(mine)
+        ).length;
+
+        if (mineCount === 0) {
+          if (row > -1) {
+            const near = [];
+            if (row - 1 > -1) {
+              near.push([row - 1, col - 1]);
+              near.push([row - 1, col]);
+              near.push([row - 1, col + 1]);
+            }
+            near.push([row, col - 1]);
+            near.push([row, col + 1]);
+            if (row + 1 < tableData.length) {
+              near.push([row + 1, col - 1]);
+              near.push([row + 1, col]);
+              near.push([row + 1, col + 1]);
+            }
+            near.forEach((coord) => {
+              if (tableData[coord[0]][coord[1]] !== CODE.OPENED) {
+                checkAround(coord[0], coord[1]);
+              }
+            });
+          }
+        }
+        tableData[row][col] = mineCount;
+      };
+      checkAround(action.row, action.col);
       return {
         ...state,
         tableData,
