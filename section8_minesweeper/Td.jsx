@@ -1,22 +1,30 @@
-import React, { useContext } from "react";
-import { CODE, TableContext } from "./Minesweeper";
+import React, { useCallback, useContext } from "react";
+import {
+  CLICK_MINE,
+  CODE,
+  FLAG_CELL,
+  NORMALIZE_CELL,
+  OPEN_CELL,
+  QUESTION_CELL,
+  TableContext,
+} from "./Minesweeper";
 
 const getTdStyle = (code) => {
   switch (code) {
     case CODE.OPENED:
-      return;
+      return { background: "white " };
     case CODE.NORMAL:
       return;
     case CODE.QUESTION:
-      return;
+      return { background: "wheat" };
     case CODE.FLAG:
-      return;
+      return { background: "green" };
     case CODE.QUESTION_MINE:
-      return;
+      return { background: "wheat" };
     case CODE.FLAG_MINE:
-      return;
+      return { background: "green" };
     case CODE.CLICKED_MINE:
-      return;
+      return { background: "red" };
     case CODE.MINE:
       return;
     default:
@@ -29,28 +37,71 @@ const getTdText = (code) => {
     case CODE.OPENED:
       return;
     case CODE.NORMAL:
-      return;
+      return "";
     case CODE.QUESTION:
-      return;
+      return "❓";
     case CODE.FLAG:
-      return;
+      return "🚩";
     case CODE.QUESTION_MINE:
-      return;
+      return "❓";
     case CODE.FLAG_MINE:
-      return;
+      return "🚩";
     case CODE.CLICKED_MINE:
-      return;
+      return "💣";
     case CODE.MINE:
-      return;
+      return "❌";
     default:
       return "";
   }
 };
 
 const Td = ({ rowIndex, colIndex }) => {
-  const { tableData } = useContext(TableContext);
+  const { tableData, dispatch, halted } = useContext(TableContext);
+  const handleTdClick = useCallback(() => {
+    if (halted) {
+      return;
+    }
+    switch (tableData[rowIndex][colIndex]) {
+      case CODE.OPENED:
+        return;
+      case CODE.NORMAL:
+        dispatch({ type: OPEN_CELL, row: rowIndex, col: colIndex });
+        return;
+      case CODE.MINE:
+        dispatch({ type: CLICK_MINE, row: rowIndex, col: colIndex });
+        return;
+    }
+  }, [tableData[rowIndex][colIndex], halted]);
+
+  const handleTdContextMenu = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (halted) {
+        return;
+      }
+      switch (tableData[rowIndex][colIndex]) {
+        case CODE.NORMAL:
+        case CODE.MINE:
+          dispatch({ type: FLAG_CELL, row: rowIndex, col: colIndex });
+          return;
+        case CODE.FLAG_MINE:
+        case CODE.FLAG:
+          dispatch({ type: QUESTION_CELL, row: rowIndex, col: colIndex });
+          return;
+        case CODE.QUESTION_MINE:
+        case CODE.QUESTION:
+          dispatch({ type: NORMALIZE_CELL, row: rowIndex, col: colIndex });
+          return;
+      }
+    },
+    [tableData[rowIndex][colIndex], halted]
+  );
   return (
-    <td style={getTdStyle(tableData[rowIndex][colIndex])}>
+    <td
+      style={getTdStyle(tableData[rowIndex][colIndex])}
+      onClick={handleTdClick}
+      onContextMenu={handleTdContextMenu}
+    >
       {getTdText(tableData[rowIndex][colIndex])}
     </td>
   );
