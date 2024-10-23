@@ -11,8 +11,6 @@ import {
 
 const getTdStyle = (code) => {
   switch (code) {
-    case CODE.OPENED:
-      return { background: "white " };
     case CODE.NORMAL:
       return;
     case CODE.QUESTION:
@@ -28,14 +26,12 @@ const getTdStyle = (code) => {
     case CODE.MINE:
       return;
     default:
-      return { background: "white" };
+      return { background: "gray" };
   }
 };
 
 const getTdText = (code) => {
   switch (code) {
-    case CODE.OPENED:
-      return;
     case CODE.NORMAL:
       return "";
     case CODE.QUESTION:
@@ -51,7 +47,7 @@ const getTdText = (code) => {
     case CODE.MINE:
       return "❌";
     default:
-      return "";
+      return code || "";
   }
 };
 

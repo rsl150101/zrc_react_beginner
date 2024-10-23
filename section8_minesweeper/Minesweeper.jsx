@@ -74,7 +74,31 @@ const reducer = (state, action) => {
     case OPEN_CELL: {
       const tableData = [...state.tableData];
       tableData[action.row] = [...state.tableData[action.row]];
-      tableData[action.row][action.col] = CODE.OPENED;
+      let around = [];
+      if (tableData[action.row - 1]) {
+        around = around.concat(
+          [tableData[action.row - 1][action.col - 1]],
+          [tableData[action.row - 1][action.col]],
+          [tableData[action.row - 1][action.col + 1]]
+        );
+      }
+      around = around.concat(
+        [tableData[action.row][action.col - 1]],
+        [tableData[action.row][action.col + 1]]
+      );
+      if (tableData[action.row + 1]) {
+        around = around.concat(
+          [tableData[action.row + 1][action.col - 1]],
+          [tableData[action.row + 1][action.col]],
+          [tableData[action.row + 1][action.col + 1]]
+        );
+      }
+
+      const mineCount = around.filter((mine) =>
+        [CODE.MINE, CODE.FLAG_MINE, CODE.QUESTION_MINE].includes(mine)
+      ).length;
+
+      tableData[action.row][action.col] = mineCount;
       return {
         ...state,
         tableData,
