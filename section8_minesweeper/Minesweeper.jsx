@@ -1,4 +1,4 @@
-import React, { useReducer, createContext, useMemo } from "react";
+import React, { useReducer, createContext, useMemo, useEffect } from "react";
 import Form from "./Form";
 import Table from "./Table";
 
@@ -15,15 +15,17 @@ export const CODE = {
 
 export const TableContext = createContext({
   tableData: [],
-  halted: false,
+  halted: true,
   dispatch: () => {},
 });
 
 const initialState = {
   tableData: [],
+  data: { row: 0, col: 0, mine: 0 },
   timer: 0,
   result: "",
-  halted: false,
+  halted: true,
+  oponedCount: 0,
 };
 
 export const START_GAME = "START_GAME";
@@ -32,6 +34,7 @@ export const CLICK_MINE = "CLICK_MINE";
 export const FLAG_CELL = "FLAG_CELL";
 export const QUESTION_CELL = "QUESTION_CELL";
 export const NORMALIZE_CELL = "NORMALIZE_CELL";
+const INCREMENT_TIMER = "INCREMENT_TIMER";
 
 const plantMine = (row, col, mine) => {
   const candidate = Array(row * col)
@@ -67,8 +70,12 @@ const reducer = (state, action) => {
     case START_GAME: {
       return {
         ...state,
+        data: { row: action.row, col: action.col, mine: action.mine },
         tableData: plantMine(action.row, action.col, action.mine),
         halted: false,
+        openedCount: 0,
+        timer: 0,
+        result: "",
       };
     }
     case OPEN_CELL: {
@@ -77,6 +84,7 @@ const reducer = (state, action) => {
         tableData[i] = [...row];
       });
       const checked = [];
+      let count = 0;
 
       const checkAround = (row, col) => {
         if (
@@ -128,33 +136,46 @@ const reducer = (state, action) => {
         ).length;
 
         if (mineCount === 0) {
-          if (row > -1) {
-            const near = [];
-            if (row - 1 > -1) {
-              near.push([row - 1, col - 1]);
-              near.push([row - 1, col]);
-              near.push([row - 1, col + 1]);
-            }
-            near.push([row, col - 1]);
-            near.push([row, col + 1]);
-            if (row + 1 < tableData.length) {
-              near.push([row + 1, col - 1]);
-              near.push([row + 1, col]);
-              near.push([row + 1, col + 1]);
-            }
-            near.forEach((coord) => {
-              if (tableData[coord[0]][coord[1]] !== CODE.OPENED) {
-                checkAround(coord[0], coord[1]);
-              }
-            });
+          const near = [];
+          if (row - 1 > -1) {
+            near.push([row - 1, col - 1]);
+            near.push([row - 1, col]);
+            near.push([row - 1, col + 1]);
           }
+          near.push([row, col - 1]);
+          near.push([row, col + 1]);
+          if (row + 1 < tableData.length) {
+            near.push([row + 1, col - 1]);
+            near.push([row + 1, col]);
+            near.push([row + 1, col + 1]);
+          }
+          near.forEach((coord) => {
+            if (tableData[coord[0]][coord[1]] !== CODE.OPENED) {
+              checkAround(coord[0], coord[1]);
+            }
+          });
+        }
+        if (tableData[row][col] === CODE.NORMAL) {
+          count += 1;
         }
         tableData[row][col] = mineCount;
       };
       checkAround(action.row, action.col);
+      let halted = false;
+      let result = "";
+      if (
+        state.data.row * state.data.col - state.data.mine ===
+        state.openedCount + count
+      ) {
+        halted = true;
+        result = "Win";
+      }
       return {
         ...state,
         tableData,
+        openedCount: state.openedCount + count,
+        halted,
+        result,
       };
     }
     case CLICK_MINE: {
@@ -165,6 +186,7 @@ const reducer = (state, action) => {
         ...state,
         tableData,
         halted: true,
+        result: "Lose",
       };
     }
     case FLAG_CELL: {
@@ -206,6 +228,12 @@ const reducer = (state, action) => {
         tableData,
       };
     }
+    case INCREMENT_TIMER: {
+      return {
+        ...state,
+        timer: state.timer + 1,
+      };
+    }
   }
 };
 
@@ -216,6 +244,17 @@ const Minesweeper = () => {
     () => ({ tableData, dispatch, halted }),
     [tableData, halted]
   );
+  useEffect(() => {
+    let timer;
+    if (!halted) {
+      timer = setInterval(() => {
+        dispatch({ type: INCREMENT_TIMER });
+      }, 1000);
+    }
+    return () => {
+      clearInterval(timer);
+    };
+  }, [halted]);
 
   return (
     <TableContext.Provider value={value}>
