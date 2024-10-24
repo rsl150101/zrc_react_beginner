@@ -261,7 +261,7 @@ const Minesweeper = () => {
       <Form />
       <h3>{timer}</h3>
       <Table />
-      <h4>{result}</h4>
+      {result && <h4>{result}</h4>}
     </TableContext.Provider>
   );
 };
