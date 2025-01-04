@@ -1,8 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import NumberBaseBall from "../section3_numberbaseball/NumberBaseball";
-import RSP from "../section5_rsp/RSP";
-import Lotto from "../section6_lotto/Lotto";
+import GameMatcher from "./GameMatcher";
 
 const Games = () => {
   return (
@@ -11,21 +9,22 @@ const Games = () => {
         <nav>
           <ul>
             <li>
-              <Link to="/number-baseball">Number BaseBall</Link>
+              <Link to="/game/number-baseball">Number BaseBall</Link>
             </li>
             <li>
-              <Link to="/rock-scissors-paper">RSP</Link>
+              <Link to="/game/rock-scissors-paper">RSP</Link>
             </li>
             <li>
-              <Link to="/lotto-generator">Lotto</Link>
+              <Link to="/game/lotto-generator">Lotto</Link>
+            </li>
+            <li>
+              <Link to="/game/index">Game matcher</Link>
             </li>
           </ul>
         </nav>
       </div>
       <Routes>
-        <Route path="/number-baseball" element={<NumberBaseBall />} />
-        <Route path="/rock-scissors-paper" element={<RSP />} />
-        <Route path="/lotto-generator" element={<Lotto />} />
+        <Route path="/game/:name" element={<GameMatcher />} />
       </Routes>
     </BrowserRouter>
   );
